@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>شركة مكة للمقاولات — التقديم</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold-light:#FCF6BA;--gold-dark:#AA771C;
+  --dark-bg:#050C18;--dark-secondary:#0D1E35;--dark-tertiary:#07111F;
+  --dark-input:#162845;--success:#27AE60;--error:#E63946;
+}
+html,body{height:100%;width:100%}
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--dark-bg) 0%,var(--dark-secondary) 50%,var(--dark-bg) 100%);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:24px 16px;font-family:'Segoe UI',Arial,sans-serif;direction:rtl;overflow-x:hidden;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{text-shadow:0 0 8px rgba(201,168,76,0.3)}50%{text-shadow:0 0 16px rgba(201,168,76,0.6)}}
+.card{
+  width:100%;max-width:500px;
+  background:linear-gradient(170deg,var(--dark-secondary) 0%,var(--dark-tertiary) 100%);
+  border-radius:20px;border:1.5px solid rgba(201,168,76,0.25);overflow:hidden;
+  box-shadow:0 30px 100px rgba(0,0,0,0.8),inset 0 1px 0 rgba(201,168,76,0.15),0 0 30px rgba(201,168,76,0.1);
+  position:relative;animation:slideIn 0.6s ease-out;backdrop-filter:blur(10px);
+}
+.gold-text{
+  background:linear-gradient(135deg,#BF953F 0%,#FCF6BA 40%,#B38728 60%,#AA771C 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:900;letter-spacing:0.5px;
+}
+.corner{position:absolute;width:32px;height:32px;z-index:10;pointer-events:none}
+.corner svg{width:32px;height:32px;filter:drop-shadow(0 0 4px rgba(201,168,76,0.3))}
+.header{
+  padding:28px 28px 18px;border-bottom:1.5px solid rgba(201,168,76,0.12);
+  text-align:center;position:relative;z-index:5;
+}
+.header-title{font-size:20px;font-weight:900;letter-spacing:0.5px}
+.header-subtitle{color:rgba(255,255,255,0.35);font-size:11px;margin-top:6px;letter-spacing:1.5px;text-transform:uppercase}
+.form-body{padding:24px 28px;position:relative;z-index:5}
+.field-label{display:block;color:rgba(201,168,76,0.85);font-size:11px;font-weight:700;margin-bottom:6px;letter-spacing:0.3px}
+.field-label .req{color:var(--error);margin-right:3px}
+.field-wrap{margin-bottom:14px}
+.row{display:flex;gap:12px}
+.row .field-wrap{flex:1}
+.row .field-wrap.wide{flex:2}
+input,select{
+  width:100%;background:rgba(22,40,69,0.7);border:1.5px solid rgba(201,168,76,0.25);
+  border-radius:12px;padding:12px 16px;color:#fff;font-size:13px;font-family:Arial;
+  outline:none;direction:rtl;transition:all 0.3s;appearance:none;-webkit-appearance:none;
+}
+input:focus,select:focus{border-color:var(--gold);background:rgba(22,40,69,0.9);box-shadow:0 0 15px rgba(201,168,76,0.15)}
+input::placeholder{color:rgba(255,255,255,0.2)}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9A84C' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:left 12px center;background-size:18px;padding-left:36px;
+}
+.divider{display:flex;align-items:center;gap:8px;margin:12px 0;opacity:0.6}
+.divider-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,0.3),transparent)}
+.divider-line.l{background:linear-gradient(-90deg,rgba(201,168,76,0.3),transparent)}
+.divider-diamond{width:5px;height:5px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
+.status-msg{
+  border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:13px;
+  text-align:center;display:none;animation:slideIn 0.3s ease-out;font-weight:600;letter-spacing:0.3px;
+}
+.status-msg.ok{background:rgba(39,174,96,0.15);border:1.5px solid rgba(39,174,96,0.4);color:#4EE07B}
+.status-msg.err{background:rgba(230,57,70,0.15);border:1.5px solid rgba(230,57,70,0.4);color:#FF5B7E}
+.submit-btn{
+  width:100%;
+  background:linear-gradient(135deg,#BF953F 0%,#FCF6BA 40%,#B38728 60%,#AA771C 100%);
+  border:none;border-radius:13px;padding:14px;color:var(--dark-tertiary);
+  font-weight:900;font-size:15px;cursor:pointer;font-family:Arial;
+  box-shadow:0 6px 25px rgba(201,168,76,0.35);transition:all 0.3s;letter-spacing:0.3px;
+  position:relative;overflow:hidden;
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 35px rgba(201,168,76,0.5)}
+.submit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.whatsapp-btn{
+  width:100%;background:linear-gradient(135deg,#25D366 0%,#20BA58 100%);
+  border:none;border-radius:13px;padding:14px;color:#fff;
+  font-weight:900;font-size:15px;cursor:pointer;font-family:Arial;
+  box-shadow:0 6px 25px rgba(37,211,102,0.35);transition:all 0.3s;margin-top:10px;
+}
+.whatsapp-btn:hover{transform:translateY(-2px);box-shadow:0 8px 35px rgba(37,211,102,0.5)}
+.hint{text-align:center;margin-top:12px;color:rgba(255,255,255,0.25);font-size:11px;letter-spacing:0.3px}
+.security-badge{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.3);
+  border-radius:8px;padding:8px;margin-top:12px;font-size:10px;color:#4EE07B;
+}
+.privacy-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
+.privacy-check input[type=checkbox]{
+  width:18px;height:18px;min-width:18px;border-radius:4px;margin-top:2px;
+  accent-color:var(--gold);cursor:pointer;
+}
+.privacy-check label{color:rgba(255,255,255,0.5);font-size:11px;line-height:1.6;cursor:pointer}
+.privacy-check label a{color:rgba(201,168,76,0.7);text-decoration:none}
+.footer{padding:14px 28px;border-top:1.5px solid rgba(201,168,76,0.1);text-align:center;position:relative;z-index:5}
+.footer-text{color:rgba(201,168,76,0.3);font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+@media(max-width:600px){
+  .card{max-width:100%}
+  input,select{font-size:14px;padding:13px 14px}
+}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="corner" style="top:12px;right:12px">
+    <svg viewBox="0 0 28 28"><path d="M2 26L2 2L26 2" fill="none" stroke="#C9A84C" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#C9A84C"/></svg>
+  </div>
+  <div class="corner" style="top:12px;left:12px;transform:scaleX(-1)">
+    <svg viewBox="0 0 28 28"><path d="M2 26L2 2L26 2" fill="none" stroke="#C9A84C" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#C9A84C"/></svg>
+  </div>
+  <div class="corner" style="bottom:12px;right:12px;transform:scaleY(-1)">
+    <svg viewBox="0 0 28 28"><path d="M2 26L2 2L26 2" fill="none" stroke="#C9A84C" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#C9A84C"/></svg>
+  </div>
+  <div class="corner" style="bottom:12px;left:12px;transform:scale(-1,-1)">
+    <svg viewBox="0 0 28 28"><path d="M2 26L2 2L26 2" fill="none" stroke="#C9A84C" stroke-width="1.5"/><circle cx="2" cy="2" r="2" fill="#C9A84C"/></svg>
+  </div>
+
+  <div class="header">
+    <div class="gold-text header-title">شركة مكة للمقاولات</div>
+    <div class="header-subtitle">نظام التقديم للوظائف</div>
+  </div>
+
+  <div class="form-body">
+    <div style="text-align:center;margin-bottom:18px">
+      <span class="gold-text" style="font-size:16px">نموذج التقديم</span>
+      <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-top:6px">وظائف إنتاج متعددة</div>
+      <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line l"></div></div>
+    </div>
+
+    <div id="statusMsg" class="status-msg"></div>
+
+    <div class="field-wrap">
+      <label class="field-label"><span class="req">*</span> الاسم</label>
+      <input type="text" id="f_name" placeholder="أدخل اسمك الكامل" autocomplete="name"/>
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label"><span class="req">*</span> الموبايل</label>
+      <input type="tel" id="f_phone" placeholder="01xxxxxxxxx" autocomplete="tel" inputmode="numeric"/>
+    </div>
+
+    <div class="row">
+      <div class="field-wrap">
+        <label class="field-label"><span class="req">*</span> السن</label>
+        <input type="number" id="f_age" placeholder="25" min="16" max="65"/>
+      </div>
+      <div class="field-wrap wide">
+        <label class="field-label"><span class="req">*</span> المحافظة</label>
+        <select id="f_gov">
+          <option value="">— اختر —</option>
+          <option>القاهرة</option><option>الجيزة</option><option>الشرقية</option>
+          <option>الإسكندرية</option><option>المنوفية</option><option>القليوبية</option>
+          <option>الغربية</option><option>كفر الشيخ</option><option>الدقهلية</option>
+          <option>دمياط</option><option>بورسعيد</option><option>الإسماعيلية</option>
+          <option>السويس</option><option>أخرى</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label">المؤهل</label>
+      <select id="f_edu">
+        <option value="">— اختر —</option>
+        <option>أقل من الثانوية</option><option>ثانوية عامة</option>
+        <option>دبلوم</option><option>بكالوريوس</option><option>ماجستير</option>
+      </select>
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label">الخبرة</label>
+      <select id="f_exp">
+        <option value="">— اختر —</option>
+        <option>بدون خبرة</option><option>أقل من سنة</option><option>1-3 سنوات</option>
+        <option>3-5 سنوات</option><option>أكثر من 5 سنوات</option>
+      </select>
+    </div>
+
+    <div class="privacy-check">
+      <input type="checkbox" id="privacyCheck"/>
+      <label for="privacyCheck">
+        أوافق على جمع بياناتي الشخصية لأغراض التوظيف فقط، ولن تُشارَك مع أي جهة خارجية.
+      </label>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">إرسال الطلب</button>
+    <button class="whatsapp-btn" onclick="contactCS()">💬 تواصل مع خدمة العملاء</button>
+
+    <div class="security-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      بياناتك محمية ومشفرة
+    </div>
+    <div class="hint">جميع البيانات تُرسل بشكل آمن</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-text">© شركة مكة للمقاولات</div>
+  </div>
+</div>
+
+<script>
+// ✅ NO secrets here — all API calls go through /netlify/functions/submit
+
+function showStatus(type, msg) {
+  const el = document.getElementById('statusMsg');
+  el.className = 'status-msg ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+function clearForm() {
+  ['f_name','f_phone','f_age'].forEach(id => document.getElementById(id).value = '');
+  ['f_gov','f_edu','f_exp'].forEach(id => document.getElementById(id).selectedIndex = 0);
+  document.getElementById('privacyCheck').checked = false;
+}
+
+async function submitForm() {
+  const name  = document.getElementById('f_name').value.trim();
+  const phone = document.getElementById('f_phone').value.trim();
+  const age   = document.getElementById('f_age').value.trim();
+  const gov   = document.getElementById('f_gov').value;
+  const edu   = document.getElementById('f_edu').value;
+  const exp   = document.getElementById('f_exp').value;
+  const privacy = document.getElementById('privacyCheck').checked;
+
+  if (!name || !phone || !age || !gov) {
+    showStatus('err', 'أكمل الحقول المطلوبة');
+    return;
+  }
+  if (!/^01[0-2]\d{8}$/.test(phone)) {
+    showStatus('err', 'رقم الموبايل غير صحيح');
+    return;
+  }
+  if (Number(age) < 16 || Number(age) > 65) {
+    showStatus('err', 'السن يجب أن يكون بين 16 و65');
+    return;
+  }
+  if (!privacy) {
+    showStatus('err', 'يجب الموافقة على سياسة الخصوصية');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'جاري الإرسال...';
+
+  try {
+    const res = await fetch('/.netlify/functions/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, phone, age, gov, edu, exp })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.ok) {
+      showStatus('ok', '✅ تم إرسال طلبك بنجاح! سيتواصل معك فريقنا قريباً');
+      // Notify admin panel (same browser only, zero server cost)
+      try {
+        const bc = new BroadcastChannel('mecca_submissions');
+        const record = { name, phone, age, gov, edu, exp, time: new Date().toLocaleString('ar-EG') };
+        bc.postMessage({ type: 'new_submission', record });
+        // Also persist to sessionStorage for admin tab
+        const stored = sessionStorage.getItem('mecca_records');
+        const recs = stored ? JSON.parse(stored) : [];
+        recs.push(record);
+        sessionStorage.setItem('mecca_records', JSON.stringify(recs));
+        bc.close();
+      } catch {}
+      clearForm();
+    } else {
+      showStatus('err', 'خطأ في الإرسال، حاول مرة أخرى');
+    }
+  } catch {
+    showStatus('err', 'خطأ في الاتصال، تحقق من الإنترنت');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'إرسال الطلب';
+}
+
+function contactCS() {
+  const phone = "201558269388";
+  const msg = encodeURIComponent("مرحبا، عندي استفسار عن الوظيفة");
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+</script>
+</body>
+</html>
